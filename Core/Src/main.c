@@ -102,7 +102,7 @@ int main(void)
   MX_FREERTOS_Init();
 
   /* Start scheduler */
-  osKernelStart();
+  // osKernelStart();
 
   /* We should never get here as control is now taken by the scheduler */
 
@@ -110,8 +110,7 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    test_adc();
-    HAL_Delay(1000);
+    key_check_run();
 
 
     /* USER CODE END WHILE */
