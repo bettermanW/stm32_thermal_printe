@@ -6,5 +6,6 @@
 #define MINIPRINTER_COMMON_H
 
 #include  <stdio.h>
+#include  <dr_adc.h>
 
 #endif //MINIPRINTER_COMMON_H
