@@ -93,6 +93,10 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
   printf("hello 2world\n");
+  HAL_ADCEx_Calibration_Start(&hadc1);
+  HAL_ADC_Start(&hadc1);
+  // 读取ADC时，它不一定转换完成了 一直轮训检查是否读取完成
+  HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY );
   /* USER CODE END 2 */
 
   /* Infinite loop */
