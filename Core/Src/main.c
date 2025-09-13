@@ -36,7 +36,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-
+uint8_t cmd[2];
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -96,25 +96,27 @@ int main(void)
   MX_TIM1_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
+
   adc_init();
-  HAL_UART_Transmit(&huart2, (uint8_t *)"+++", 11, HAL_MAX_DELAY);
-  HAL_UART_Transmit(&huart2, (uint8_t *)"AT+NAME\r\n", 11, HAL_MAX_DELAY);
 
   /* USER CODE END 2 */
 
   /* Call init function for freertos objects (in cmsis_os2.c) */
-  MX_FREERTOS_Init();
+  // MX_FREERTOS_Init();
 
   /* Start scheduler */
-  osKernelStart();
+  // osKernelStart();
 
   /* We should never get here as control is now taken by the scheduler */
 
+  HAL_UART_Receive_IT(&huart1, cmd, 1);
+  printf("Hello World\n");
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    key_check_run();
+    // test_led();
+    // key_check_run();
 
 
     /* USER CODE END WHILE */
