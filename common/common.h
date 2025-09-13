@@ -9,7 +9,6 @@
 #include <stdbool.h>
 #include  "dr_adc.h"
 #include "test.h"
-#include "cmsis_os.h"
 #include "dr_btn.h"
 
 #endif //MINIPRINTER_COMMON_H
