@@ -4,11 +4,14 @@
 
 #ifndef MINIPRINTER_COMMON_H
 #define MINIPRINTER_COMMON_H
-
+#include "stm32f1xx_hal.h"
+#include "stm32f1xx_hal_gpio.h"
+#include "main.h"
 #include  <stdio.h>
 #include <stdbool.h>
 #include  "dr_adc.h"
 #include "test.h"
 #include "dr_btn.h"
+#include "dr_led.h"
 
 #endif //MINIPRINTER_COMMON_H
