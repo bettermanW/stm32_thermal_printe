@@ -21,4 +21,6 @@ void device_state_init(void);
 void set_device_paper_staus(paper_state_e status);
 device_state_t * get_device_state(void);
 
+void read_paper_status(void);
+
 #endif //MINIPRINTER_SYS_DEVICE_H
