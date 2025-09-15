@@ -96,7 +96,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
   adc_init();
-
+  read_paper_status();
   /* USER CODE END 2 */
 
   /* Infinite loop */

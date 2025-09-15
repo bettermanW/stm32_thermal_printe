@@ -53,11 +53,11 @@ void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(GPIOB, LED_Pin|MOTOR_IN4_Pin|MOTOR_IN3_Pin|MOTOR_IN2_Pin
                           |MOTOR_IN1_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pin : BTN_Pin */
-  GPIO_InitStruct.Pin = BTN_Pin;
+  /*Configure GPIO pins : BTN_Pin PAINT_Pin */
+  GPIO_InitStruct.Pin = BTN_Pin|PAINT_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(BTN_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /*Configure GPIO pins : LED_Pin MOTOR_IN4_Pin MOTOR_IN3_Pin MOTOR_IN2_Pin
                            MOTOR_IN1_Pin */

@@ -69,6 +69,8 @@ void Error_Handler(void);
 #define BTN_GPIO_Port GPIOA
 #define LED_Pin GPIO_PIN_0
 #define LED_GPIO_Port GPIOB
+#define PAINT_Pin GPIO_PIN_8
+#define PAINT_GPIO_Port GPIOA
 #define MOTOR_IN4_Pin GPIO_PIN_6
 #define MOTOR_IN4_GPIO_Port GPIOB
 #define MOTOR_IN3_Pin GPIO_PIN_7
