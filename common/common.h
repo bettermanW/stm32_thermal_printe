@@ -13,5 +13,6 @@
 #include "test.h"
 #include "dr_btn.h"
 #include "dr_led.h"
+#include "sys_device.h"
 
 #endif //MINIPRINTER_COMMON_H
