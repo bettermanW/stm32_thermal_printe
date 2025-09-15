@@ -51,6 +51,16 @@ void read_paper_status(void) {
     printf("paper_state = %d\n",get_device_state()->paper_state);
 }
 
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+    if (GPIO_Pin == PAINT_Pin) // 判断是否是PA0触发的中断
+    {
+        read_paper_status();
+        // 记得清除中断挂起标志位
+        __HAL_GPIO_EXTI_CLEAR_IT(PAINT_Pin);
+    }
+}
+
 /*读取打印机温度*/
 void read_temperature()
 {
