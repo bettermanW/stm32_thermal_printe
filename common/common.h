@@ -9,6 +9,7 @@
 #include "main.h"
 #include  <stdio.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include  "dr_adc.h"
 #include "test.h"
 #include "dr_btn.h"

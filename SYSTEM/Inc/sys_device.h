@@ -4,7 +4,8 @@
 
 #ifndef MINIPRINTER_SYS_DEVICE_H
 #define MINIPRINTER_SYS_DEVICE_H
-#include <stdint.h>
+#include "common.h"
+
 
 typedef enum{
     PAPER_STATE_NORMAL,
@@ -22,5 +23,7 @@ void set_device_paper_staus(paper_state_e status);
 device_state_t * get_device_state(void);
 
 void read_paper_status(void);
+void read_temperature(void);
+void read_battery(void);
 
 #endif //MINIPRINTER_SYS_DEVICE_H

@@ -8,6 +8,6 @@
 void adc_init(void);
 float get_adc_volts(void);
 
-float get_adc_temperatrue(void);
+float get_adc_temperature(void);
 void em_adc_test();
 #endif //MINIPRINTER_DR_ADC_H

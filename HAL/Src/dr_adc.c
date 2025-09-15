@@ -48,7 +48,7 @@ float get_adc_volts(void) {
 /**
  * @brief 获取温度值
  */
-float get_adc_temperatrue() {
+float get_adc_temperature() {
     // 使用之前已经处理好的ADC值
     float vol = (float)ADC_Value[1] * 3.3f / 4096;
     float Rt = (vol * 10000) / (3.3f - vol);
