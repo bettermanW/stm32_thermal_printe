@@ -20,6 +20,7 @@ void device_state_init() {
     g_device_state.battery = 100;
     g_device_state.temperature = 30;
     g_device_state.paper_state = PAPER_STATE_NORMAL;
+    g_device_state.read_ble_finish = false;
 }
 
 /**
@@ -49,6 +50,14 @@ void read_paper_status(void) {
         get_device_state()->paper_state = PAPER_STATE_NORMAL;
     }
     printf("paper_state = %d\n",get_device_state()->paper_state);
+}
+
+/**
+ * @brief 设置蓝牙连接完成
+ * @param finish
+ */
+void set_read_ble_finish(bool finish){
+    g_device_state.read_ble_finish = finish;
 }
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
