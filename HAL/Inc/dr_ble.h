@@ -4,5 +4,9 @@
 
 #ifndef MINIPRINTER_DR_BLE_H
 #define MINIPRINTER_DR_BLE_H
+#include "common.h"
+
+void init_ble(void);
+void uart_cmd_handle(uint8_t data);
 
 #endif //MINIPRINTER_DR_BLE_H
