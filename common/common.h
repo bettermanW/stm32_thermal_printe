@@ -6,6 +6,7 @@
 #define MINIPRINTER_COMMON_H
 #include "stm32f1xx_hal.h"
 #include "stm32f1xx_hal_gpio.h"
+#include "usart.h"
 #include "main.h"
 #include "cmsis_os.h"
 #include  <stdio.h>
@@ -20,5 +21,7 @@
 #include "dr_motor.h"
 #include "dr_printer.h"
 #include "sys_timer.h"
+#include "dr_ble.h"
+#include "sys_queue.h"
 
 #endif //MINIPRINTER_COMMON_H
