@@ -61,10 +61,10 @@ void Error_Handler(void);
 #define ADC1_VOLTAGE_GPIO_Port GPIOA
 #define ADC1_THER_Pin GPIO_PIN_1
 #define ADC1_THER_GPIO_Port GPIOA
-#define BLE_TX_Pin GPIO_PIN_2
-#define BLE_TX_GPIO_Port GPIOA
-#define BLE_RX_Pin GPIO_PIN_3
+#define BLE_RX_Pin GPIO_PIN_2
 #define BLE_RX_GPIO_Port GPIOA
+#define BLE_TX_Pin GPIO_PIN_3
+#define BLE_TX_GPIO_Port GPIOA
 #define BTN_Pin GPIO_PIN_4
 #define BTN_GPIO_Port GPIOA
 #define LED_Pin GPIO_PIN_0

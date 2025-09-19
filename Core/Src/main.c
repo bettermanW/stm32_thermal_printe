@@ -32,12 +32,13 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
+#include "dr_ble.h"
 #include "test.h"
+#include "timers.h"
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-uint8_t cmd[2];
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -100,6 +101,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
   adc_init();
+  init_ble();
 
 
   /* USER CODE END 2 */
@@ -116,8 +118,7 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    // test_led();
-    key_check_run();
+
 
 
     /* USER CODE END WHILE */

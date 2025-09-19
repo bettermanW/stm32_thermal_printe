@@ -21,8 +21,8 @@
 #include "usart.h"
 
 /* USER CODE BEGIN 0 */
-#include "stdio.h"
-extern uint8_t cmd[1];
+#include "common.h"
+uint8_t aRxBuffer;
 /* USER CODE END 0 */
 
 UART_HandleTypeDef huart1;
@@ -82,7 +82,7 @@ void MX_USART2_UART_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN USART2_Init 2 */
-
+  HAL_UART_Receive_IT(&huart2, (uint8_t *)&aRxBuffer, 1);
   /* USER CODE END USART2_Init 2 */
 
 }
@@ -114,9 +114,6 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-    /* USART1 interrupt Init */
-    HAL_NVIC_SetPriority(USART1_IRQn, 5, 0);
-    HAL_NVIC_EnableIRQ(USART1_IRQn);
   /* USER CODE BEGIN USART1_MspInit 1 */
 
   /* USER CODE END USART1_MspInit 1 */
@@ -134,15 +131,15 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
     PA2     ------> USART2_TX
     PA3     ------> USART2_RX
     */
-    GPIO_InitStruct.Pin = BLE_TX_Pin;
+    GPIO_InitStruct.Pin = BLE_RX_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
-    HAL_GPIO_Init(BLE_TX_GPIO_Port, &GPIO_InitStruct);
+    HAL_GPIO_Init(BLE_RX_GPIO_Port, &GPIO_InitStruct);
 
-    GPIO_InitStruct.Pin = BLE_RX_Pin;
+    GPIO_InitStruct.Pin = BLE_TX_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
-    HAL_GPIO_Init(BLE_RX_GPIO_Port, &GPIO_InitStruct);
+    HAL_GPIO_Init(BLE_TX_GPIO_Port, &GPIO_InitStruct);
 
     /* USART2 interrupt Init */
     HAL_NVIC_SetPriority(USART2_IRQn, 5, 0);
@@ -170,8 +167,6 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
     */
     HAL_GPIO_DeInit(GPIOA, GPIO_PIN_9|GPIO_PIN_10);
 
-    /* USART1 interrupt Deinit */
-    HAL_NVIC_DisableIRQ(USART1_IRQn);
   /* USER CODE BEGIN USART1_MspDeInit 1 */
 
   /* USER CODE END USART1_MspDeInit 1 */
@@ -188,7 +183,7 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
     PA2     ------> USART2_TX
     PA3     ------> USART2_RX
     */
-    HAL_GPIO_DeInit(GPIOA, BLE_TX_Pin|BLE_RX_Pin);
+    HAL_GPIO_DeInit(GPIOA, BLE_RX_Pin|BLE_TX_Pin);
 
     /* USART2 interrupt Deinit */
     HAL_NVIC_DisableIRQ(USART2_IRQn);
@@ -205,20 +200,15 @@ int __io_putchar(int ch) {
   return ch;
 }
 
+
 // 重写串口2的接处理函数，把数据抛到uart_cmd_handle中进行处理
+
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
-  if (huart->Instance == USART1) {
-    if (cmd[0] == 'T') {
-      HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);
-    }else if (cmd[0] == 'F') {
-      HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_SET);
-    }
+  if (huart->Instance == USART2) {
+    // printf("BLE Response: %d\n", aRxBuffer);  // 打印接收到的数据
+    uart_cmd_handle(aRxBuffer);
+    HAL_UART_Receive_IT(&huart2, &aRxBuffer, 1);
   }
-  // printf("re = %c\n", cmd[0]);
-  // HAL_UART_Transmit_IT(&huart1, cmd, 1);  // 将收到的数据重新发送
-  // 重新开启中断接收
-  HAL_UART_Receive_IT(&huart1, cmd, 1);
 }
-
 /* USER CODE END 1 */
