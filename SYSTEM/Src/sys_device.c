@@ -99,7 +99,7 @@ void read_battery()
     battery_percent = battery_percent < 0 ? 0 : battery_percent;
 
     get_device_state()->battery = battery_percent;
-    printf("battery = %d%%, voltage = %.2fmV\n", battery_percent, voltage);
+    printf("battery = %ld%%, voltage = %.2fmV\n", battery_percent, voltage);
 }
 
 
