@@ -8,6 +8,13 @@
 
 
 typedef enum{
+    PRINTER_STATUS_INIT = 0,
+    PRINTER_STATUS_START,
+    PRINTER_STATUS_WORKING,
+    PRINTER_STATUS_FINISH,
+}printer_state_e;
+
+typedef enum{
     PAPER_STATE_NORMAL,
     PAPER_STATE_LACK
 }paper_state_e; // 是否缺纸状态
@@ -17,6 +24,7 @@ typedef struct {
     uint8_t temperature;
     paper_state_e paper_state;
     bool read_ble_finish;
+    printer_state_e printer_state;
 }device_state_t;    // 设备状态定义
 
 void device_state_init(void);
