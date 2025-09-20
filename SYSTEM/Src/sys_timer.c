@@ -58,3 +58,8 @@ void clean_state_timeout(){
 void close_printer_timeout_timer(){
     osTimerDelete(myTimeoutTimerHandle);
 }
+
+// 是否打印超时
+bool get_printer_timeout_status(){
+    return printer_timeout;
+}
