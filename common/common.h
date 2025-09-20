@@ -23,5 +23,6 @@
 #include "sys_timer.h"
 #include "dr_ble.h"
 #include "sys_queue.h"
+#include "config.h"
 
 #endif //MINIPRINTER_COMMON_H
