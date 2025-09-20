@@ -351,5 +351,17 @@ void uart_cmd_handle(uint8_t data) {
     }
 }
 
+void ble_report(){
+    if (get_ble_connect()){
+        device_state_t *pdevice = get_device_state();
+        uint8_t status[4];
+        status[0] = pdevice->battery;
+        status[1] = pdevice->temperature;
+        status[2] = pdevice->paper_state;
+        status[3] = pdevice->printer_state;
+        HAL_UART_Transmit(&huart2,(uint8_t*)&status,sizeof(status),0xffff);
+    }
+}
+
 
 

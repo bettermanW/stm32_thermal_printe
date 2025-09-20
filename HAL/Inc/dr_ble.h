@@ -8,5 +8,6 @@
 
 void init_ble(void);
 void uart_cmd_handle(uint8_t data);
+void ble_report(void);
 
 #endif //MINIPRINTER_DR_BLE_H
