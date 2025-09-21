@@ -26,4 +26,5 @@ typedef struct{
 void sys_queue_init(void);
 void write_to_printbuffer(uint8_t *pdata, size_t length);
 uint8_t *read_to_printer(void);
+void clean_printbuffer(void);
 #endif //MINIPRINTER_SYS_QUEUE_H
