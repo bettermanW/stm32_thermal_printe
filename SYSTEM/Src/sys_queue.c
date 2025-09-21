@@ -6,11 +6,17 @@ ble_rx_t g_ble_rx;
 
 SemaphoreHandle_t xHandler = NULL;  // 用于引用一个信号量对象
 
+// 获取队列中剩余的行数
+uint32_t get_ble_rx_left_line()
+{
+    return g_ble_rx.left_line;
+}
+
 /**
  * @brief 清空接收缓存
  *
  */
-void clean_printbuffer()
+void clean_print_buffer()
 {
     g_ble_rx.w_index = 0;    // 读指针
     g_ble_rx.r_index = 0;   // 写指针
@@ -18,7 +24,7 @@ void clean_printbuffer()
 }
 
 void sys_queue_init(void) {
-    clean_printbuffer();
+    clean_print_buffer();
     // 互斥量的作用是保护共享资源，
     // 让 多个任务或 ISR 访问同一资源时不会发生冲突
     xHandler = xSemaphoreCreateMutex();
@@ -30,7 +36,7 @@ void sys_queue_init(void) {
  * @param pdata
  * @param length
  */
-void write_to_printbuffer(uint8_t *pdata, size_t length)
+void write_to_print_buffer(uint8_t *pdata, size_t length)
 {
     // 标记在释放信号量后是否有比当前任务优先级更高的任务需要立即执行
     static BaseType_t xHigherPriorityTaskWoken;
