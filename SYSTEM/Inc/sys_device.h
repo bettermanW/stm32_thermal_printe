@@ -33,8 +33,5 @@ device_state_t * get_device_state(void);
 
 void set_read_ble_finish(bool finish);
 
-void read_paper_status(void);
-void read_temperature(void);
-void read_battery(void);
 
 #endif //MINIPRINTER_SYS_DEVICE_H
