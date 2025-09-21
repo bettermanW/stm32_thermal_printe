@@ -8,21 +8,10 @@
 
 #include "common.h"
 
-/**
- * 状态灯
- * 蓝牙已连接   暗
- * 蓝牙未连接 亮
- * 运行异常 快闪
- * 打印中  慢闪
- * 蓝牙初始化配置
- */
-typedef  enum {
-    LED_CONNECTED,
-    LED_DISCONNECTED,
-    LED_WARONG,
-    LED_PRINT_START,
-    LED_BLE_INIT
-}led_state_e;
 
-void led_run_state(led_state_e state);
+
+void led_on(void);
+void led_off(void);
+void led_flash(uint8_t count, uint8_t ms);
+
 #endif //MINIPRINTER_DR_LED_H
