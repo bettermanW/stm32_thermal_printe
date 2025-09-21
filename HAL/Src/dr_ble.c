@@ -56,7 +56,7 @@ e_ble_init_step g_ble_init_step = BLE_INIT_START;   //初始化
  * @description 将packcount计数器清零
  * @usage 通常在设备重置、重新连接或开始新的传输会话时调用
  */
-void clean_blepack_count() {
+void clean_ble_pack_count() {
     pack_count = 0;
 }
 
@@ -65,7 +65,7 @@ void clean_blepack_count() {
  * @return 当前累计的数据包数量
  * @usage 用于查询当前传输进度或统计信息
  */
-uint32_t get_blepack_count() {
+uint32_t get_ble_pack_count() {
     return pack_count;
 }
 
@@ -75,7 +75,9 @@ bool get_ble_connect() {
 
 int cmd_index = 0;
 
-/*缓冲区数据*/
+/*缓冲区数据
+ * 存放接收到的一整条命令或响应（例如 "OK\r\n"、"+CONN\r\n"）
+ */
 uint8_t cmd_buffer[100];
 bool need_clean_ble_status = false;
 
@@ -285,7 +287,7 @@ void uart_cmd_handle(uint8_t data) {
          */
         if (cmd_index >= 48) {
             pack_count++;  // 数据包计数器递增
-            write_to_printbuffer(cmd_buffer, cmd_index);  // 写入打印缓冲区
+            write_to_print_buffer(cmd_buffer, cmd_index);  // 写入打印缓冲区
             cmd_index = 0;  // 重置缓冲区索引
             memset(cmd_buffer, 0, sizeof(cmd_buffer));  // 清空缓冲区
             // printf("packcount = %d\n",packcount); // 调试用，已注释
@@ -299,6 +301,7 @@ void uart_cmd_handle(uint8_t data) {
          * AT命令成功响应处理 - "OK\r\n"
          * 根据当前初始化状态进行状态转换
          */
+        // 在字符串 ptr_char 中查找子串 "OK\r\n"
         if (strstr(ptr_char, "OK\r\n") != NULL) {
             // 状态机转换逻辑
             if (g_ble_init_step == BLE_IN_AT_MODE) {
@@ -351,6 +354,10 @@ void uart_cmd_handle(uint8_t data) {
     }
 }
 
+
+/**
+ * @brief 在设备和 BLE 模块保持连接时，将设备的运行状态发送出去
+ */
 void ble_report(){
     if (get_ble_connect()){
         device_state_t *pdevice = get_device_state();
