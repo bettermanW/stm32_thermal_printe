@@ -100,9 +100,17 @@ int main(void)
   MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
 
-  adc_init();
-  init_ble();
+  // init_task();
 
+
+  device_state_init();
+  init_timer();
+  sys_queue_init();
+  adc_init();
+  printf("vol =  %.2f\n", get_adc_volts());
+  // test_voltage();
+  // read_all_hal();
+  // testSTB();
 
   /* USER CODE END 2 */
 
