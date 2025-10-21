@@ -15,8 +15,8 @@ typedef enum{
 }printer_state_e;
 
 typedef enum{
-    PAPER_STATE_NORMAL,
-    PAPER_STATE_LACK
+    PAPER_STATE_LACK,
+    PAPER_STATE_NORMAL
 }paper_state_e; // 是否缺纸状态
 
 typedef struct {

@@ -24,5 +24,7 @@
 #include "dr_ble.h"
 #include "sys_queue.h"
 #include "config.h"
+#include "sys_hal.h"
+#include "task.h"
 
 #endif //MINIPRINTER_COMMON_H

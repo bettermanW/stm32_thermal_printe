@@ -110,7 +110,7 @@ static void read_battery()
         return;
     }
 
-    uint32_t battery_percent = map((long)voltage, 3300, 4200, 0, 100);
+    uint32_t battery_percent = map(3300, 3300, 4200, 0, 100);
     battery_percent = battery_percent > 100 ? 100 : battery_percent;
     battery_percent = battery_percent < 0 ? 0 : battery_percent;
 

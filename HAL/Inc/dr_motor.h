@@ -8,6 +8,8 @@
 
 //V3 电机引脚
 #include "common.h"
+void motor_start();
+
 void motor_run(void);
 void motor_run_step(uint32_t steps);
 void motor_stop(void);

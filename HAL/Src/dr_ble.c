@@ -370,5 +370,18 @@ void ble_report(){
     }
 }
 
+//这步操作是因为厂家的蓝牙模组，现在status只关了busy、connect timeout、device start、wake up
+//所以需要把CONNECTED DISCONNECTED DEVICE ERROR这些业务无关数据清掉
+void ble_status_data_clean(){
+    if(need_clean_ble_status){
+        vTaskDelay(200);
+        printf("clean --->%s\n",cmd_buffer);
+        cmd_index = 0;
+        memset(cmd_buffer,0,sizeof(cmd_buffer));
+        need_clean_ble_status = false;
+    }
+
+}
+
 
 

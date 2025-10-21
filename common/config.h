@@ -7,7 +7,7 @@
 #include "common.h"
 
 //接收完成所有数据才开始打印
-#define START_PRINTER_WHEN_FINISH_RAED 1
+#define START_PRINTER_WHEN_FINISH_RAED 0
 
 #define PRINT_TIME 1700         //打印加热时间
 #define PRINT_END_TIME 200      //冷却时间

@@ -16,7 +16,9 @@ device_state_t g_device_state;
  * @brief  配置初始化
  */
 void device_state_init() {
-    g_device_state.battery = 100;
+    memset(&g_device_state,0,sizeof(device_state_t));
+    g_device_state.printer_state = PRINTER_STATUS_INIT;
+    g_device_state.battery = 10;
     g_device_state.temperature = 30;
     g_device_state.paper_state = PAPER_STATE_NORMAL;
     g_device_state.read_ble_finish = false;

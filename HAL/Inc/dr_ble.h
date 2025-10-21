@@ -9,6 +9,7 @@
 void init_ble(void);
 void uart_cmd_handle(uint8_t data);
 void ble_report(void);
+void ble_status_data_clean();
 
 void clean_ble_pack_count();
 uint32_t get_ble_pack_count();
