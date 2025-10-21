@@ -6,14 +6,14 @@
 static uint32_t adc_alg_handle(const uint32_t *adc, int size);
 static float temp_calculate(float Rt);
 
-#define ADC_READ_TIME 10 // 读取次数
-uint32_t ADC_Value[2]; // 储存读取的电压、温度值
+uint16_t ADC_Value[3]; // 储存读取的电压、温度值
 
 /**
  * @brief ADC初始化
  */
 void adc_init() {
-    HAL_ADCEx_Calibration_Start(&hadc1);    // 进行一次校准
+    HAL_ADCEx_Calibration_Start(& hadc1); // 校准
+    HAL_ADC_Start_DMA(&hadc1, (uint32_t * )ADC_Value, 3);
 }
 
 /**
@@ -21,28 +21,8 @@ void adc_init() {
  * @return 返回测量电压值
  */
 float get_adc_volts(void) {
-    uint32_t adc1[ADC_READ_TIME], adc2[ADC_READ_TIME];
-
-    for (int sample_ptr = 0; sample_ptr < ADC_READ_TIME; sample_ptr++) {
-        // 第一次Start：转换通道1（电压）
-        HAL_ADC_Start(&hadc1);
-        if (HAL_ADC_PollForConversion(&hadc1, 100) == HAL_OK) {
-            adc1[sample_ptr] = HAL_ADC_GetValue(&hadc1);
-        }
-        HAL_ADC_Stop(&hadc1);
-
-        // 第二次Start：转换通道2（温度）
-        HAL_ADC_Start(&hadc1);
-        if (HAL_ADC_PollForConversion(&hadc1, 100) == HAL_OK) {
-            adc2[sample_ptr] = HAL_ADC_GetValue(&hadc1);
-        }
-        HAL_ADC_Stop(&hadc1);
-    }
-
-    ADC_Value[0] = adc_alg_handle(adc1, ADC_READ_TIME);
-    ADC_Value[1] = adc_alg_handle(adc2, ADC_READ_TIME);
-
-    return (float)ADC_Value[0] * 3.3f / 4096;
+    // return ADC_Value[0];
+    return (float)ADC_Value[0] * 3.3f / 4096.0f;
 }
 
 /**
@@ -52,7 +32,13 @@ float get_adc_temperature() {
     // 使用之前已经处理好的ADC值
     float vol = (float)ADC_Value[1] * 3.3f / 4096;
     float Rt = (vol * 10000) / (3.3f - vol);
+    // return ADC_Value[1];
     return temp_calculate(Rt);
+}
+
+float get_adc_ver_fint(void) {
+    // return ADC_Value[2] *  3.3f / 4096;
+    return ADC_Value[2];
 }
 
 /**

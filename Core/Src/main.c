@@ -20,6 +20,7 @@
 #include "main.h"
 #include "cmsis_os.h"
 #include "adc.h"
+#include "dma.h"
 #include "spi.h"
 #include "tim.h"
 #include "usart.h"
@@ -93,10 +94,11 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
   MX_USART1_UART_Init();
   MX_ADC1_Init();
   MX_TIM1_Init();
-  MX_USART2_UART_Init();
+  // MX_USART2_UART_Init();
   MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
 
@@ -107,18 +109,21 @@ int main(void)
   init_timer();
   sys_queue_init();
   adc_init();
-  printf("vol =  %.2f\n", get_adc_volts());
+
+  // printf("tmp = %.2f\n", get_adc_temperature());
+  // printf("vol =  %.2f\n", get_adc_volts());
+  // printf("verFint =  %.2f\n", get_adc_ver_fint());
   // test_voltage();
-  // read_all_hal();
+  //
   // testSTB();
 
   /* USER CODE END 2 */
 
   /* Call init function for freertos objects (in cmsis_os2.c) */
-  MX_FREERTOS_Init();
-
-  /* Start scheduler */
-  osKernelStart();
+  // MX_FREERTOS_Init();
+  //
+  // /* Start scheduler */
+  // osKernelStart();
 
   /* We should never get here as control is now taken by the scheduler */
 
@@ -126,7 +131,9 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-
+    // printf("vol =  %.2f\n", get_adc_volts());
+    read_all_hal();
+    HAL_Delay(100);
 
 
     /* USER CODE END WHILE */
