@@ -13,9 +13,6 @@ bool printer_timeout = false;   // 打印超时标志
 /* read_state_timer_callbackfun function */
 void read_state_timer_callback_fun(void const * argument)
 {
-
-    // 每次触发时打印提示
-    printf("read_state now...\r\n");
     read_state_timeout = true;
     /* USER CODE END read_state_timer_callbackfun */
 }
@@ -23,10 +20,10 @@ void read_state_timer_callback_fun(void const * argument)
 /*打印超时回调函数*/
 void read_timeout_timer_callback_fun(void const * argument)
 {
-    printf("触发打印超时错误...\r\n");
     printer_timeout = true;
 }
 
+// 每10s上传一次数据
 void init_timer(){
     // 定义一个定时器，名字叫 myStateTimer，回调函数是 read_state_timer_callbackfun
     osTimerDef(myStateTimer, read_state_timer_callback_fun);
@@ -38,14 +35,15 @@ void init_timer(){
     osTimerStart(myStateTimerHandle, 10000);
 }
 
+// 打印任务开始时启动这个定时器
 void open_printer_timeout_timer(){
     printer_timeout = false;
     osTimerDef(myTimeoutTimer, read_timeout_timer_callback_fun);
     myTimeoutTimerHandle = osTimerCreate(osTimer(myTimeoutTimer), osTimerOnce, NULL);
-    osTimerStart(myTimeoutTimerHandle,20000);   // 20ms
+    osTimerStart(myTimeoutTimerHandle,20000);   // 20s
 }
 
-/*查询定时器是否超时*/
+/*查询是否需要触发状态查询：即是否到达10s*/
 bool get_state_timeout(){
     return read_state_timeout;
 }
