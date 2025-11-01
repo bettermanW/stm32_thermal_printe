@@ -62,7 +62,7 @@ void MX_FREERTOS_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+extern uint8_t aRxBuffer;
 /* USER CODE END 0 */
 
 /**
@@ -98,32 +98,18 @@ int main(void)
   MX_USART1_UART_Init();
   MX_ADC1_Init();
   MX_TIM1_Init();
-  // MX_USART2_UART_Init();
+  MX_USART2_UART_Init();
   MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
-
-  // init_task();
-
-
-  device_state_init();
-  init_timer();
-  sys_queue_init();
-  adc_init();
-
-  // printf("tmp = %.2f\n", get_adc_temperature());
-  // printf("vol =  %.2f\n", get_adc_volts());
-  // printf("verFint =  %.2f\n", get_adc_ver_fint());
-  // test_voltage();
-  //
-  // testSTB();
-
+  HAL_UART_Receive_IT(&huart2, (uint8_t *)&aRxBuffer, 1);
+  init_task();
   /* USER CODE END 2 */
 
   /* Call init function for freertos objects (in cmsis_os2.c) */
-  // MX_FREERTOS_Init();
-  //
-  // /* Start scheduler */
-  // osKernelStart();
+  MX_FREERTOS_Init();
+
+  /* Start scheduler */
+  osKernelStart();
 
   /* We should never get here as control is now taken by the scheduler */
 
@@ -131,9 +117,9 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    // printf("vol =  %.2f\n", get_adc_volts());
-    read_all_hal();
-    HAL_Delay(100);
+    // // printf("vol =  %.2f\n", get_adc_volts());
+    // read_all_hal();
+    // HAL_Delay(100);
 
 
     /* USER CODE END WHILE */
