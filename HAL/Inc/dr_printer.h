@@ -35,4 +35,6 @@ void start_printing_by_one_stb(uint8_t stb_num, uint8_t *data, uint32_t len);
 
 
 void testSTB();
+
+void test_black_line(void);
 #endif //MINIPRINTER_DR_PRINTER_H

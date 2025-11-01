@@ -17,7 +17,20 @@
 
 // 热密度
 uint8_t heat_density = 64;
+#define PRINT_TEMP_LIMIT    65
+#define LAT_PULSE_US        10
+#define COOL_DOWN_DELAY_MS  100
+#define SAFE_STOP_DELAY_MS  50
 
+float addTime[6] = {0};
+// 点数-增加时间系数
+#define kAddTime 0.001
+
+
+/**
+ * @brief  设置打印密度
+ * @param density 打印密度
+ */
 void set_heat_density(const uint8_t density)
 {
     printf("打印密度设置 %d\n", density);
@@ -47,103 +60,83 @@ static void init_printing() {
     open_printer_timeout_timer();
     //失能6个通道
     set_stb_idle();
-    HAL_GPIO_WritePin(LAT_GPIO_Port, LAT_Pin, GPIO_PIN_SET);    // 锁存器设为高电平
+    // 锁存器设为高电平
+    HAL_GPIO_WritePin(LAT_GPIO_Port, LAT_Pin, GPIO_PIN_SET);
     // 开启电源
     HAL_GPIO_WritePin(VH_EN_GPIO_Port, VH_EN_Pin, GPIO_PIN_SET);
 }
 
-static  void stop_printing() {
+static  void stop_printing(const char *reason) {
 
+    printf("[STOP] 打印结束：%s\n", reason);
+    vTaskDelay(pdMS_TO_TICKS(COOL_DOWN_DELAY_MS)); // 让热头冷却
     close_printer_timeout_timer();
     HAL_GPIO_WritePin(VH_EN_GPIO_Port, VH_EN_Pin, GPIO_PIN_RESET);
     set_stb_idle();
     HAL_GPIO_WritePin(LAT_GPIO_Port, LAT_Pin, GPIO_PIN_SET);
+    motor_stop();
+    vTaskDelay(pdMS_TO_TICKS(SAFE_STOP_DELAY_MS));
 
 }
 
-
-float addTime[6] = {0};
-// 点数-增加时间系数
-#define kAddTime 0.001
-
-
-static void clearAddTime()
+static inline uint8_t bitcount(uint8_t v)
 {
-    memset(addTime, 0, sizeof(addTime));
+    uint8_t c = 0;
+    for (int b = 0; b < 8; b++)
+        if (v & (1 << b)) c++;
+    return c;
 }
 
 
-/**
- * @brief  发送一行数据
- * @param data 数据
- */
-static void send_one_line_data(const uint8_t *data) {
 
+
+
+static void send_one_line_data(uint8_t *data)
+{
     float tmpAddTime = 0;
-    clearAddTime();
+    memset(addTime, 0, sizeof(addTime));
 
+    // 计算每个 STB 通道的加热时间补偿
     for (uint8_t i = 0; i < 6; ++i)
     {
         for (uint8_t j = 0; j < 8; ++j)
-        {
-            addTime[i] += data[i * 8 + j];
-        }
+            addTime[i] += bitcount(data[i * 8 + j]);   // ✅ 修正点数统计
         tmpAddTime = addTime[i] * addTime[i];
         addTime[i] = kAddTime * tmpAddTime;
     }
 
-    HAL_SPI_Transmit(&hspi1, data, sizeof(data), HAL_MAX_DELAY);
+    // 终于找到错误了，这里不能用sizeof(data) = 4; 应该是48
+    for (int i = 0; i < 6; i++) printf("%02X ", data[i]);
+    printf("\n");
+    HAL_SPI_Transmit(&hspi1, data, TPH_DI_LEN, HAL_MAX_DELAY);
     HAL_GPIO_WritePin(LAT_GPIO_Port, LAT_Pin, GPIO_PIN_RESET);
     us_delay(LAT_TIME);
+    HAL_GPIO_WritePin(LAT_GPIO_Port, LAT_Pin, GPIO_PIN_SET);
 }
+
 
 /**
  * @brief 通道打印运行
- * @param now_stb_num 选用哪个通道
+ * @param stb_index 选用哪个通道
  */
-static void run_stb(uint8_t now_stb_num) {
+static void run_stb(uint8_t stb_index) {
 
-    switch (now_stb_num) {
-        case 0:
-            HAL_GPIO_WritePin(STB1_GPIO_Port, STB1_Pin, GPIO_PIN_SET);
-            us_delay((PRINT_TIME + addTime[0] + STB1_ADD_TIME) * ((double)heat_density / 100));
-            HAL_GPIO_WritePin(STB1_GPIO_Port, STB1_Pin, GPIO_PIN_RESET);
-            us_delay(PRINT_END_TIME);
-            break;
-        case 1:
-            HAL_GPIO_WritePin(STB2_GPIO_Port, STB2_Pin, GPIO_PIN_SET);
-            us_delay((PRINT_TIME + addTime[1] + STB2_ADD_TIME) * ((double)heat_density / 100));
-            HAL_GPIO_WritePin(STB2_GPIO_Port, STB2_Pin, GPIO_PIN_RESET);
-            us_delay(PRINT_END_TIME);
-            break;
-        case 2:
-            HAL_GPIO_WritePin(STB3_GPIO_Port, STB3_Pin, GPIO_PIN_SET);
-            us_delay((PRINT_TIME + addTime[2] + STB3_ADD_TIME) * ((double)heat_density / 100));
-            HAL_GPIO_WritePin(STB3_GPIO_Port, STB3_Pin, GPIO_PIN_RESET);
-            us_delay(PRINT_END_TIME);
-            break;
-        case 3:
-            HAL_GPIO_WritePin(STB4_GPIO_Port, STB4_Pin, GPIO_PIN_SET);
-            us_delay((PRINT_TIME + addTime[3] + STB4_ADD_TIME) * ((double)heat_density / 100));
-            HAL_GPIO_WritePin(STB4_GPIO_Port, STB4_Pin, GPIO_PIN_RESET);
-            us_delay(PRINT_END_TIME);
-            break;
-        case 4:
-            HAL_GPIO_WritePin(STB5_GPIO_Port, STB5_Pin, GPIO_PIN_SET);
-            us_delay((PRINT_TIME + addTime[4] + STB5_ADD_TIME) * ((double)heat_density / 100));
-            HAL_GPIO_WritePin(STB5_GPIO_Port, STB5_Pin, GPIO_PIN_RESET);
-            us_delay(PRINT_END_TIME);
-            break;
-        case 5:
-            HAL_GPIO_WritePin(STB6_GPIO_Port, STB6_Pin, GPIO_PIN_SET);
-            us_delay((PRINT_TIME + addTime[5] + STB6_ADD_TIME) * ((double)heat_density / 100));
-            HAL_GPIO_WritePin(STB6_GPIO_Port, STB6_Pin, GPIO_PIN_RESET);
-            us_delay(PRINT_END_TIME);
-            break;
-        default:
-            break;
+    GPIO_TypeDef *ports[6] = {
+        STB1_GPIO_Port, STB2_GPIO_Port, STB3_GPIO_Port,
+        STB4_GPIO_Port, STB5_GPIO_Port, STB6_GPIO_Port
+    };
+    const uint16_t pins[6] = {
+        STB1_Pin, STB2_Pin, STB3_Pin,
+        STB4_Pin, STB5_Pin, STB6_Pin
+    };
 
-    }
+    float print_time = (PRINT_TIME + addTime[stb_index]) *
+                       ((float)heat_density / 100.0f);
+
+    HAL_GPIO_WritePin(ports[stb_index], pins[stb_index], GPIO_PIN_SET);
+    us_delay(print_time);
+    HAL_GPIO_WritePin(ports[stb_index], pins[stb_index], GPIO_PIN_RESET);
+    us_delay(PRINT_END_TIME);
 }
 
 /**
@@ -154,35 +147,24 @@ static void run_stb(uint8_t now_stb_num) {
  */
 bool move_and_start_std(bool need_stop, uint8_t stb_num)
 {
-    if (need_stop == true)
-    {
-        printf("打印停止\n");
-        motor_stop();
-        stop_printing();
-        return true;
-    }
-    // 4step一行
+    if (need_stop) return true;
+
     motor_run();
+
     if (stb_num == ALL_STB_NUM)
     {
-        // 所有通道打印
-        for (uint8_t index = 0; index < 6; index++)
+        for (uint8_t i = 0; i < 6; i++)
         {
-            run_stb(index);
-            // 把电机运行信号插入通道加热中，减少打印卡顿和耗时
-            if (index == 1 || index == 3 || index == 5)
-            {
-                motor_run();
-            }
+            run_stb(i);
+            if (i % 2) motor_run();
         }
-        // motor_run_step(3);
     }
     else
     {
-        // 单通道打印
         run_stb(stb_num);
         motor_run_step(3);
     }
+
     return false;
 }
 
@@ -196,37 +178,97 @@ bool move_and_start_std(bool need_stop, uint8_t stb_num)
  */
 bool printing_error_check(bool need_report)
 {
-    if (get_printer_timeout_status())
-    {
-        printf("打印超时\n");
+    device_state_t *dev = get_device_state();
+
+    if (get_printer_timeout_status()) {
+        printf("[ERR] 打印超时\n");
         return true;
     }
-    if (get_device_state()->paper_state == PAPER_STATE_LACK)
-    {
-        if(need_report){
-            // 停止打印
-            clean_print_buffer();
-            ble_report();
-        }
-        // 停止打印
-        printf("缺纸\n");
+
+    if (dev->paper_state == PAPER_STATE_LACK) {
+        printf("[ERR] 缺纸\n");
+        if (need_report) ble_report();
         led_run_state(LED_WARONG);
         return true;
     }
-    if (get_device_state()->temperature > 65)
-    {
-        if(need_report){
-            // 停止打印
-            clean_print_buffer();
-            ble_report();
-        }
-        // 停止打印
-        printf("温度异常\n");
+
+    if (dev->temperature > PRINT_TEMP_LIMIT) {
+        printf("[ERR] 温度过高\n");
+        if (need_report) ble_report();
         led_run_state(LED_WARONG);
         return true;
     }
+
     return false;
 }
+
+/**
+ * @brief 可变队列打印
+ *
+ */
+void start_printing_by_queue_buf(void)
+{
+    uint8_t *pdata = NULL;
+    uint32_t printer_count = 0;
+    const TickType_t delay_per_line = pdMS_TO_TICKS(1);
+
+    printf("[PRINT] 开始打印\n");
+    init_printing();
+
+    while (1)
+    {
+        if (get_ble_rx_left_line() > 0)
+        {
+            pdata = read_to_printer();
+            if (pdata)
+            {
+                printer_count++;
+                send_one_line_data(pdata);
+                move_and_start_std(false, ALL_STB_NUM);
+            }
+        }
+        else
+        {
+            stop_printing("正常结束");
+            break;
+        }
+
+        if (get_printer_timeout_status()) {
+            stop_printing("超时");
+            break;
+        }
+
+        if (printing_error_check(true)) {
+            stop_printing("错误终止");
+            break;
+        }
+
+        vTaskDelay(delay_per_line);  // 给 FreeRTOS 调度时间
+    }
+
+    motor_run_step(140);
+    motor_stop();
+    clean_ble_pack_count();
+    printf("[PRINT] 完成: 打印行=%lu\n", printer_count);
+}
+
+
+/****************************测试**************************/
+
+
+void test_black_line(void)
+{
+    uint8_t line[48];
+    memset(line, 0xFF, sizeof(line));  // 全黑点
+    init_printing();
+    for (int i = 0; i < 50; i++) {
+        send_one_line_data(line);
+        move_and_start_std(false, ALL_STB_NUM);
+    }
+    stop_printing("reson\n");
+}
+
+
 
 
 /**
@@ -262,44 +304,8 @@ void start_printing(const uint8_t *data, const uint32_t len)
     printf("打印完成\n");
 }
 
-/**
- * @brief 可变队列打印
- *
- */
-void start_printing_by_queue_buf()
-{
-    uint8_t *pdata = NULL;
-		uint32_t printer_count = 0;
-    init_printing();
-    while (1)
-    {
-        if (get_ble_rx_left_line() > 0)
-        {
-            // printf("printing...\n");
-            pdata = read_to_printer();
-            if (pdata != NULL)
-            {
-								printer_count ++;
-                send_one_line_data(pdata);
-                if (move_and_start_std(false, ALL_STB_NUM))
-                    break;
-            }
-        }
-        else
-        {
-            if (move_and_start_std(true, ALL_STB_NUM))
-                break;
-        }
-        if (get_printer_timeout_status())
-            break;
-        if(printing_error_check(true))
-            break;
-    }
-    motor_run_step(140);
-    motor_stop();
-    clean_ble_pack_count();
-    printf("printer finish !!! read=%ld printer:%ld\n",get_ble_pack_count(),printer_count);
-}
+
+
 
 /**
  * @brief 单通道数组打印
