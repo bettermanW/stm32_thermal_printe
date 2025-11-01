@@ -45,7 +45,7 @@ float get_adc_ver_fint(void) {
  * @brief 公式法求温度
  */
 static float temp_calculate(const float Rt) {
-    const float Rp = 10000; // 注意：根据实际热敏电阻修改（通常为10k）
+    const float Rp = 30000; // 注意：根据实际热敏电阻修改（通常为10k）
     const float T2 = 25 + 273.15f;
     const float B = 3950;
     const float Ka = 273.15f;

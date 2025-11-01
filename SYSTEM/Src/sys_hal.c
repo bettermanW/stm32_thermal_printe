@@ -66,9 +66,8 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
     if (GPIO_Pin == PAINT_Pin) // 判断是否是PA0触发的中断
     {
-        read_paper_status();
-        // 记得清除中断挂起标志位
-        __HAL_GPIO_EXTI_CLEAR_IT(PAINT_Pin);
+        need_report = true;
+        get_device_state()->paper_state = PAPER_STATE_LACK;
     }
 }
 
@@ -104,13 +103,13 @@ static void read_temperature()
 // 电池读取增加错误处理
 static void read_battery()
 {
-    float voltage = get_adc_volts() * 2;  // 假设有2倍分压
+    const float voltage = get_adc_volts() * 2;  // 假设有2倍分压
     if(voltage < 0) {
         printf("ADC read error!\n");
         return;
     }
 
-    uint32_t battery_percent = map(3300, 3300, 4200, 0, 100);
+    uint32_t battery_percent = map(voltage, 3300, 4200, 0, 100);
     battery_percent = battery_percent > 100 ? 100 : battery_percent;
     battery_percent = battery_percent < 0 ? 0 : battery_percent;
 
