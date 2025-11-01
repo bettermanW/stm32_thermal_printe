@@ -54,16 +54,16 @@ void key_long_click_free_handle()
 /***/
 void task_button(void *pvParameters)
 {
-    int count = 0;
+    // int count = 0;
     printf("task_button init\n");
     for (;;) {
         key_check_run();   // 处理按键状态机
         vTaskDelay(20);     // 每 20 tick 执行一次
-        count++;
-        if (count >= 250) {
-            count = 0;
-            printf("task_button run\n");
-        }
+        // count++;
+        // if (count >= 250) {
+        //     count = 0;
+        //     printf("task_button run\n");
+        // }
     }
 }
 
@@ -73,10 +73,10 @@ void task_button(void *pvParameters)
 // 周期性检查是否需要上报状态
 void run_report() {
 
-    if (get_state_timeout()) {
+    if (get_state_timeout()) { // 如果定时到达 10s
         clean_state_timeout();
         read_all_hal();   // 读取电池、电机、打印机等状态
-        if (get_ble_connect()) {
+        if (get_ble_connect()) { // 蓝牙是否连接
             printf("report device status:report time up\n");
             ble_report(); // 蓝牙上报状态
         }
@@ -96,7 +96,7 @@ void run_report() {
 void run_printer()
 {
     device_state_t *pdevice = get_device_state();
-#ifdef START_PRINTER_WHEN_FINISH_RAED
+#ifdef START_PRINTER_WHEN_FINISH_RAED // 接收完在打印
     if (pdevice->read_ble_finish == true)
     {
         if (pdevice->printer_state == PRINTER_STATUS_FINISH ||
@@ -136,7 +136,7 @@ void run_printer()
 
 void task_printer(void *pvParameters)
 {
-    int count = 0;
+    // int count = 0;
     init_ble();
     printf("task_printer init\n");
     for (;;) {
@@ -145,13 +145,14 @@ void task_printer(void *pvParameters)
         vTaskDelay(1);   // 1 tick 周期
         if (printer_test) {
             printer_test = false;
+            // test_black_line();
             testSTB();   // 执行测试打印
         }
-        count++;
-        if (count >= 5000) {
-            count = 0;
-            printf("task_printer run\n");
-        }
+        // count++;
+        // if (count >= 5000) {
+        //     count = 0;
+        //     printf("task_printer run\n");
+        // }
     }
 }
 
@@ -162,16 +163,16 @@ void task_printer(void *pvParameters)
  */
 void task_report(void *pvParameters)
 {
-    int count = 0;
+    // int count = 0;
     printf("task_report init\n");
     for (;;) {
         run_report();
         vTaskDelay(100);   // 延时100 tick (~100ms)
-        count++;
-        if (count >= 50) {
-            count = 0;
-            printf("task_report run\n");
-        }
+        // count++;
+        // if (count >= 50) {
+        //     count = 0;
+        //     printf("task_report run\n");
+        // }
     }
 }
 
@@ -198,7 +199,7 @@ void init_task(void) {
     xTaskCreate(
        task_report,  // 任务函数
        "TaskReport", // 任务名
-       128,          // 任务栈
+       256,          // 任务栈
        NULL,         // 任务参数
        1,            // 任务优先级, with 3 (configMAX_PRIORITIES - 1) 是最高的，0是最低的.
        NULL          // 任务句柄
