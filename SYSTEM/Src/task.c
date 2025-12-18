@@ -119,8 +119,7 @@ void run_printer()
             pdevice->printer_state = PRINTER_STATUS_START;
             ble_report();
             printf("report device status : printing start\n");
-            run_beep(BEEP_PRINTER_START);
-            run_led(LED_PRINTER_START);
+            led_run_state(LED_PRINT_START);
         }
     }
 #endif

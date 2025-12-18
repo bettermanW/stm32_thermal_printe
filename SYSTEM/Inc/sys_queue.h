@@ -9,7 +9,7 @@
 //一行最大byte
 #define MAX_ONELINE_BYTE 48 // 打印机最大
 //最大行数
-#define MAX_LINE 250
+#define MAX_LINE 200
 
 typedef struct{
     uint8_t buffer[MAX_ONELINE_BYTE];
